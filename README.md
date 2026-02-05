@@ -173,9 +173,11 @@ Reset the current cleaning session
 - **KNN**: Use K-Nearest Neighbors algorithm for intelligent imputation
 
 ### Outlier Handling
-- **IQR (MAD-based)**: Uses Median Absolute Deviation (MAD) for robust outlier detection and capping
+- **IQR Method**: Despite the name, this option uses Median Absolute Deviation (MAD) for robust outlier detection and capping (see Note below)
 - **Z-Score**: Standard score method (mean ± 3 standard deviations)
 - **Winsorization**: Cap extreme values at 5th and 95th percentiles
+
+> **Note**: The API accepts `"outlierMethod": "iqr"` but internally implements MAD (Median Absolute Deviation) algorithm, which is a robust statistical method for outlier detection.
 
 ## 🎨 Features in Detail
 
