@@ -67,7 +67,30 @@ class AdvancedDataCleaner:
         self.stats_after = {}
         self.outliers_info = {}
         self.missing_info = {}
-        
+        self.missing_tokens = {"", "na", "n/a", "nan", "null", "none", "unknown", "error"}
+
+    def _normalize_missing_values(self, df):
+        """Normalize common missing-value tokens to NaN for object columns."""
+        object_cols = df.select_dtypes(include=['object']).columns
+        for col in object_cols:
+            series = df[col]
+            mask = series.astype(str).str.strip().str.lower().isin(self.missing_tokens)
+            if mask.any():
+                df.loc[mask, col] = np.nan
+
+    def _coerce_numeric_columns(self, df, threshold=0.6):
+        """Coerce object columns to numeric when mostly numeric."""
+        object_cols = df.select_dtypes(include=['object']).columns
+        for col in object_cols:
+            series = df[col]
+            non_null_count = series.notna().sum()
+            if non_null_count == 0:
+                continue
+            numeric_series = pd.to_numeric(series, errors='coerce')
+            numeric_count = numeric_series.notna().sum()
+            if numeric_count / non_null_count >= threshold:
+                df[col] = numeric_series
+
     def load_data(self, file_path):
         """Loads and performs initial analysis on the dataset."""
         try:
@@ -78,6 +101,8 @@ class AdvancedDataCleaner:
                 self.original_data = pd.read_excel(file_path)
             
             self.original_data.columns = [str(col).strip() for col in self.original_data.columns]
+            self._normalize_missing_values(self.original_data)
+            self._coerce_numeric_columns(self.original_data)
             self.cleaned_data = self.original_data.copy()
             self.analyze_data_quality(is_before=True)
             self.log_action(f"Data loaded: {len(self.original_data)} rows, {len(self.original_data.columns)} columns")
@@ -157,6 +182,8 @@ class AdvancedDataCleaner:
 
     def run_cleaning(self, options):
         """Executes the selected cleaning operations and rounds results."""
+        self._normalize_missing_values(self.cleaned_data)
+        self._coerce_numeric_columns(self.cleaned_data)
         initial_rows = len(self.cleaned_data)
         initial_missing = self.cleaned_data.isnull().sum().sum()
         initial_duplicates = self.cleaned_data.duplicated().sum()
