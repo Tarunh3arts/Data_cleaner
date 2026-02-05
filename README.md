@@ -7,7 +7,7 @@ A powerful web-based data cleaning and analysis tool built with Flask and React 
 ### Data Processing
 - **File Upload**: Support for CSV, XLSX, and XLS file formats
 - **Missing Value Handling**: Multiple imputation methods (Mean, Median, KNN)
-- **Outlier Detection & Treatment**: MAD (Median Absolute Deviation), Z-Score, and Winsorization methods
+- **Outlier Detection & Treatment**: IQR (MAD-based), Z-Score, and Winsorization methods
 - **Duplicate Removal**: Automatic detection and removal of duplicate rows
 - **Smart Type Inference**: Automatic detection and conversion of numeric columns
 - **Data Normalization**: Handles common missing value tokens (na, n/a, null, none, etc.)
@@ -173,7 +173,7 @@ Reset the current cleaning session
 - **KNN**: Use K-Nearest Neighbors algorithm for intelligent imputation
 
 ### Outlier Handling
-- **MAD (Median Absolute Deviation)**: Robust statistical method for outlier detection
+- **IQR (MAD-based)**: Uses Median Absolute Deviation (MAD) for robust outlier detection and capping
 - **Z-Score**: Standard score method (mean ± 3 standard deviations)
 - **Winsorization**: Cap extreme values at 5th and 95th percentiles
 
